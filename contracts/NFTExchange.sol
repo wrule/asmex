@@ -30,6 +30,19 @@ contract NFTExchange {
   }
 
   function targetBuyETH(IERC721 erc721, uint256 tokenId) external payable {
+    Order storage order = orders[erc721][tokenId];
+    if (order.erc20 != IERC20(address(1))) revert();
+    if (msg.value < order.price) revert();
+    
+    erc721.safeTransferFrom(erc721.ownerOf(tokenId), msg.sender, tokenId);
 
+    (bool paymentSuccess, ) = order.owner.call{value: order.price}("");
+    if (!paymentSuccess) revert();
+    
+    uint256 change = msg.value - order.price;
+    if (change > 0) {
+      (bool changeSuccess, ) = msg.sender.call{value: change}("");
+      if (!changeSuccess) revert();
+    }
   }
 }
