@@ -44,5 +44,7 @@ contract NFTExchange {
       (bool changeSuccess, ) = msg.sender.call{value: change}("");
       if (!changeSuccess) revert();
     }
+
+    order.erc20 = IERC20(address(2));
   }
 }
