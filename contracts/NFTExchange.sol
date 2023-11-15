@@ -47,4 +47,19 @@ contract NFTExchange {
 
     order.erc20 = IERC20(address(2));
   }
+
+  function limitSellERC20(
+    IERC721 erc721,
+    uint256 tokenId,
+    IERC20 erc20,
+    uint256 ethPrice
+  ) external {
+    Order storage order = orders[erc721][tokenId];
+    order.owner = msg.sender;
+    order.price = ethPrice;
+    address oldAddress = address(order.erc20);
+    order.erc20 = erc20;
+    if (oldAddress == address(0))
+      orderView[erc721].push(order);
+  }
 }
