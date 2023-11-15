@@ -62,4 +62,15 @@ contract NFTExchange {
     if (oldAddress == address(0))
       orderView[erc721].push(order);
   }
+
+  function targetBuyERC20(IERC721 erc721, uint256 tokenId) external {
+    Order storage order = orders[erc721][tokenId];
+    if (
+      order.erc20 == IERC20(address(0)) ||
+      order.erc20 == IERC20(address(1)) ||
+      order.erc20 == IERC20(address(2))
+    ) revert();
+    order.erc20.transferFrom(msg.sender, order.owner, order.price);
+    erc721.safeTransferFrom(erc721.ownerOf(tokenId), msg.sender, tokenId);
+  }
 }
